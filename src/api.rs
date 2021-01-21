@@ -2,6 +2,8 @@ use reqwest::Client;
 use serde::Deserialize;
 use std::fmt;
 
+use crate::get;
+
 pub enum Protocol {
     HTTP,
     HTTPS,
@@ -14,18 +16,6 @@ impl fmt::Display for Protocol {
             Protocol::HTTPS => write!(f, "https"),
         }
     }
-}
-
-macro_rules! get {
-    ($self: ident, $e:expr, $s: ty) => {
-        $self
-            .client
-            .get(&$self.build_url($e))
-            .send()
-            .await?
-            .json::<$s>()
-            .await
-    };
 }
 
 type Peers = Vec<String>;
@@ -56,6 +46,18 @@ pub struct Api<'a> {
     client: Client,
 }
 
+/// API client for Arweave.
+///
+/// Uses `reqwest` for HTTP requests and `serde` & `serde_derive` for deserializing response data.
+///
+/// ## usage
+/// ```rust
+/// use arweave_rs::api::{Protocol, Api};
+///
+/// let client = Api::new("arweave.net", Protocol::HTTPS, 443);
+/// // Interact with Arweave HTTP API asyncronously
+/// // client.network_info().await?
+/// ```
 impl<'a> Api<'a> {
     pub fn new(host: &'a str, protocol: Protocol, port: usize) -> Self {
         Self {
@@ -102,13 +104,8 @@ impl<'a> Api<'a> {
 #[cfg(test)]
 mod tests {
     use crate::api::{Api, Protocol};
+    use crate::wait;
     use tokio_test;
-
-    macro_rules! wait {
-        ($e:expr) => {
-            tokio_test::block_on($e)
-        };
-    }
 
     #[test]
     fn test_network_info() {
