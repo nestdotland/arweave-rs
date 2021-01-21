@@ -16,6 +16,20 @@ impl fmt::Display for Protocol {
     }
 }
 
+macro_rules! get {
+    ($self: ident, $e:expr, $s: ty) => {
+        $self
+            .client
+            .get(&$self.build_url($e))
+            .send()
+            .await?
+            .json::<$s>()
+            .await
+    };
+}
+
+type Peers = Vec<String>;
+
 #[derive(Deserialize, Debug)]
 pub struct NetworkInfo {
     pub network: String,
@@ -60,21 +74,11 @@ impl<'a> Api<'a> {
     }
 
     pub async fn network_info(&self) -> Result<NetworkInfo, reqwest::Error> {
-        self.client
-            .get(&self.build_url("info"))
-            .send()
-            .await?
-            .json::<NetworkInfo>()
-            .await
+        get!(self, "info", NetworkInfo)
     }
 
-    pub async fn peer_info(&self) -> Result<Vec<String>, reqwest::Error> {
-        self.client
-            .get(&self.build_url("peers"))
-            .send()
-            .await?
-            .json::<Vec<String>>()
-            .await
+    pub async fn peer_info(&self) -> Result<Peers, reqwest::Error> {
+        get!(self, "peers", Peers)
     }
 }
 
