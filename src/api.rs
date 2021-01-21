@@ -67,6 +67,15 @@ impl<'a> Api<'a> {
             .json::<NetworkInfo>()
             .await
     }
+
+    pub async fn peer_info(&self) -> Result<Vec<String>, reqwest::Error> {
+        self.client
+            .get(&self.build_url("peers"))
+            .send()
+            .await?
+            .json::<Vec<String>>()
+            .await
+    }
 }
 
 #[cfg(test)]
@@ -81,8 +90,14 @@ mod tests {
     }
 
     #[test]
-    fn test_api_builder() {
+    fn test_network_info() {
         let client = Api::new("arweave.net", Protocol::HTTPS, 443);
         let _network_info = wait!(client.network_info()).unwrap();
+    }
+
+    #[test]
+    fn test_peer_info() {
+        let client = Api::new("arweave.net", Protocol::HTTPS, 443);
+        let _peer_info = wait!(client.peer_info()).unwrap();
     }
 }
