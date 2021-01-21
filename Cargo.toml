@@ -5,4 +5,8 @@ authors = ["littledivy <dj.srivastava23@gmail.com>"]
 edition = "2018"
 
 [dependencies]
+serde = { version = "1.0", features = ["derive"] }
 reqwest = { version = "0.11.0", features = ["json"] }
+
+[dev-dependencies]
+tokio-test = "0.4.0"
