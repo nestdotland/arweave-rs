@@ -1,2 +1,4 @@
-# arweave-rs
-Arweave Rust SDK
+### `arweave-rs`
+
+Arweave Rust SDK.
+
