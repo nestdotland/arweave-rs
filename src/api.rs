@@ -31,6 +31,12 @@ macro_rules! get {
 type Peers = Vec<String>;
 
 #[derive(Deserialize, Debug)]
+pub struct TransactionOffsetResponse {
+    pub size: String,
+    pub offset: String,
+}
+
+#[derive(Deserialize, Debug)]
 pub struct NetworkInfo {
     pub network: String,
     pub version: usize,
@@ -79,6 +85,17 @@ impl<'a> Api<'a> {
 
     pub async fn peer_info(&self) -> Result<Peers, reqwest::Error> {
         get!(self, "peers", Peers)
+    }
+
+    pub async fn transaction_offset(
+        &self,
+        id: &'a str,
+    ) -> Result<TransactionOffsetResponse, reqwest::Error> {
+        get!(
+            self,
+            &format!("tx/${}/offset", id),
+            TransactionOffsetResponse
+        )
     }
 }
 
