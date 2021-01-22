@@ -113,6 +113,10 @@ impl<'a> Api<'a> {
     ) -> Result<TransactionChunkResponse, reqwest::Error> {
         get!(self, &format!("chunk/{}", offset), TransactionChunkResponse)
     }
+
+    pub async fn tx_anchor(&self) -> Result<String, reqwest::Error> {
+        get!(self, "tx_anchor", String)
+    }
 }
 
 #[cfg(test)]
