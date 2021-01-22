@@ -18,7 +18,9 @@ impl fmt::Display for Protocol {
     }
 }
 
-type Peers = Vec<String>;
+pub type Peers = Vec<String>;
+
+pub type Error = reqwest::Error;
 
 #[derive(Deserialize, Debug)]
 pub struct TransactionOffsetResponse {
@@ -86,6 +88,13 @@ impl<'a> Api<'a> {
 
     fn build_url(&self, route: &'a str) -> String {
         format!("{}://{}:{}/{}", self.protocol, self.host, self.port, route)
+    }
+
+    pub async fn get<T: for<'de> Deserialize<'de>>(
+        &self,
+        url: &'a str,
+    ) -> Result<T, reqwest::Error> {
+        get!(self, url, T)
     }
 
     pub async fn network_info(&self) -> Result<NetworkInfo, reqwest::Error> {
