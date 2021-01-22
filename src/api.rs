@@ -27,6 +27,13 @@ pub struct TransactionOffsetResponse {
 }
 
 #[derive(Deserialize, Debug)]
+pub struct TransactionChunkResponse {
+    chunk: String,
+    data_path: String,
+    tx_path: String,
+}
+
+#[derive(Deserialize, Debug)]
 pub struct NetworkInfo {
     pub network: String,
     pub version: usize,
@@ -95,9 +102,16 @@ impl<'a> Api<'a> {
     ) -> Result<TransactionOffsetResponse, reqwest::Error> {
         get!(
             self,
-            &format!("tx/${}/offset", id),
+            &format!("tx/{}/offset", id),
             TransactionOffsetResponse
         )
+    }
+
+    pub async fn get_chunk(
+        &self,
+        offset: usize,
+    ) -> Result<TransactionChunkResponse, reqwest::Error> {
+        get!(self, &format!("chunk/{}", offset), TransactionChunkResponse)
     }
 }
 
