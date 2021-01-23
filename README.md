@@ -1,6 +1,6 @@
 <p align="center">
 
-![](logo.png)
+<img src="logo.png" />
 
 <p align="center">
     <code>arweave_rs</code>
