@@ -6,16 +6,31 @@ use rand::RngCore;
 use rsa::{PaddingScheme, PublicKey};
 use sha2::{Digest, Sha256};
 
+pub type CryptoResult = Result<Vec<u8>, Box<dyn std::error::Error>>;
+
+pub trait CryptoInterface {
+    fn hash<H: Digest>(data: &[u8]) -> Vec<u8>;
+    fn sign(key: &str, data: &[u8], salt_len: usize) -> CryptoResult;
+    fn verify(
+        key: &str,
+        data: Vec<u8>,
+        signature: Vec<u8>,
+    ) -> Result<(), Box<dyn std::error::Error>>;
+    fn derive_password(password: &str) -> CryptoResult;
+    fn encrypt(password: &str, data: &[u8]) -> CryptoResult;
+    fn decrypt(password: &str, ciphertext: &[u8]) -> CryptoResult;
+}
+
 pub struct Crypto;
 
-impl Crypto {
-    pub fn hash<H: Digest>(data: &[u8]) -> Vec<u8> {
+impl CryptoInterface for Crypto {
+    fn hash<H: Digest>(data: &[u8]) -> Vec<u8> {
         let mut hasher = H::new();
         hasher.update(data);
         hasher.finalize().as_slice().to_vec()
     }
 
-    pub fn sign(
+    fn sign(
         key: &str,
         data: &[u8],
         salt_len: usize,
@@ -32,7 +47,7 @@ impl Crypto {
         Ok(signature.as_slice().to_vec())
     }
 
-    pub fn verify(
+    fn verify(
         key: &str,
         data: Vec<u8>,
         signature: Vec<u8>,
@@ -46,7 +61,7 @@ impl Crypto {
         Ok(())
     }
 
-    pub fn derive_password(password: &str) -> Result<Vec<u8>, Box<dyn std::error::Error>> {
+    fn derive_password(password: &str) -> Result<Vec<u8>, Box<dyn std::error::Error>> {
         let mut out = [0u8; 32];
 
         pbkdf2::pbkdf2::<Hmac<Sha256>>(password.as_bytes(), b"salt", 100000, &mut out);
@@ -54,7 +69,7 @@ impl Crypto {
         Ok(Vec::from(out))
     }
 
-    pub fn encrypt(password: &str, data: &[u8]) -> Result<Vec<u8>, Box<dyn std::error::Error>> {
+    fn encrypt(password: &str, data: &[u8]) -> Result<Vec<u8>, Box<dyn std::error::Error>> {
         let key = Crypto::derive_password(password)?;
         let mut iv = [0u8; 32];
 
@@ -72,10 +87,7 @@ impl Crypto {
         Ok(output_vecs.concat())
     }
 
-    pub fn decrypt(
-        password: &str,
-        ciphertext: &[u8],
-    ) -> Result<Vec<u8>, Box<dyn std::error::Error>> {
+    fn decrypt(password: &str, ciphertext: &[u8]) -> Result<Vec<u8>, Box<dyn std::error::Error>> {
         let key = Crypto::derive_password(password)?;
         let iv = &ciphertext[0..16];
 
@@ -89,7 +101,7 @@ impl Crypto {
 
 #[cfg(test)]
 mod tests {
-    use crate::crypto::{Crypto, Sha256};
+    use crate::crypto::{Crypto, CryptoInterface, Sha256};
 
     #[test]
     fn test_hash() {
