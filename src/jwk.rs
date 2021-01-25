@@ -3,28 +3,26 @@ use serde::{Deserialize, Serialize};
 use serde_json::from_str;
 
 #[derive(Serialize, Deserialize)]
-struct JwkPublic {
-    kty: String,
-    n: Vec<u8>,
-    e: Vec<u8>,
+pub struct JwkPublic {
+    pub kty: String,
+    pub n: Vec<u8>,
+    pub e: Vec<u8>,
 }
 
 #[derive(Serialize, Deserialize)]
-struct JwkPrivate {
-    kty: String,
-    n: Vec<u8>,
-    e: Vec<u8>,
-    d: Vec<u8>,
-    p: Vec<u8>,
-    q: Vec<u8>,
-    dp: Vec<u8>,
-    dq: Vec<u8>,
-    qi: Vec<u8>,
+pub struct JwkPrivate {
+    pub kty: String,
+    pub n: Vec<u8>,
+    pub e: Vec<u8>,
+    pub d: Vec<u8>,
+    pub p: Vec<u8>,
+    pub q: Vec<u8>,
+    pub dp: Vec<u8>,
+    pub dq: Vec<u8>,
+    pub qi: Vec<u8>,
 }
 
-pub fn read_public_jwk(data: &str) -> Result<RSAPublicKey, Box<dyn std::error::Error>> {
-    let components: JwkPublic = from_str(&data)?;
-
+pub fn read_public_jwk(components: JwkPublic) -> Result<RSAPublicKey, Box<dyn std::error::Error>> {
     if components.kty != "RSA" {
         // TODO: return error
         panic!("invalid key type")
@@ -38,9 +36,9 @@ pub fn read_public_jwk(data: &str) -> Result<RSAPublicKey, Box<dyn std::error::E
     Ok(public_key)
 }
 
-pub fn read_private_jwk(data: &str) -> Result<RSAPrivateKey, Box<dyn std::error::Error>> {
-    let components: JwkPrivate = from_str(&data)?;
-
+pub fn read_private_jwk(
+    components: JwkPrivate,
+) -> Result<RSAPrivateKey, Box<dyn std::error::Error>> {
     if components.kty != "RSA" {
         // TODO: return error
         panic!("invalid key type")
