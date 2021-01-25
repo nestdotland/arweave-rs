@@ -26,6 +26,7 @@ pub fn read_public_jwk (data: &str) -> Result<RSAPublicKey, Box<dyn std::error::
   let components: JwkPublic = from_str(&data)?;
 
   if components.kty != "RSA" {
+    // TODO: return error
     panic!("invalid key type")
   }
 
