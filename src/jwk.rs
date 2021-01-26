@@ -1,3 +1,4 @@
+use crate::b64::decode_url;
 use rsa::{BigUint, RSAPrivateKey, RSAPublicKey};
 use serde::{Deserialize, Serialize};
 use serde_json::from_str;
@@ -44,14 +45,14 @@ pub fn read_private_jwk(
         panic!("invalid key type")
     }
 
-    let n = BigUint::from_bytes_be(&components.n);
-    let e = BigUint::from_bytes_be(&components.e);
-    let d = BigUint::from_bytes_be(&components.d);
-    let p = BigUint::from_bytes_be(&components.p);
-    let q = BigUint::from_bytes_be(&components.q);
-    let dp = BigUint::from_bytes_be(&components.dp);
-    let dq = BigUint::from_bytes_be(&components.dq);
-    let qi = BigUint::from_bytes_be(&components.qi);
+    let n = BigUint::from_bytes_be(&decode_url(&components.n)?);
+    let e = BigUint::from_bytes_be(&decode_url(&components.e)?);
+    let d = BigUint::from_bytes_be(&decode_url(&components.d)?);
+    let p = BigUint::from_bytes_be(&decode_url(&components.p)?);
+    let q = BigUint::from_bytes_be(&decode_url(&components.q)?);
+    let dp = BigUint::from_bytes_be(&decode_url(&components.dp)?);
+    let dq = BigUint::from_bytes_be(&decode_url(&components.dq)?);
+    let qi = BigUint::from_bytes_be(&decode_url(&components.qi)?);
 
     let mut primes = Vec::<BigUint>::new();
 
