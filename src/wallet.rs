@@ -31,4 +31,8 @@ impl<'a> Wallet<'a> {
             .get::<String>(&format!("wallet/{}/last_tx", address))
             .await
     }
+
+    pub async fn generate() -> Result<JWKPrivate, Error> {
+        crate::crypto::generate_jwk()
+    }
 }

@@ -9,8 +9,11 @@ use sha2::{Digest, Sha256};
 
 pub type CryptoResult = Result<Vec<u8>, Box<dyn std::error::Error>>;
 
+pub async fn generate_jwk() -> Result<JWKPrivate, Error> {
+
+}
+
 pub trait CryptoInterface {
-    // TODO: async fn generateKey()
     fn hash<H: Digest>(data: &[u8]) -> Vec<u8>;
     fn sign(key: JwkPrivate, data: &[u8], salt_len: Option<usize>) -> CryptoResult;
     fn verify(
