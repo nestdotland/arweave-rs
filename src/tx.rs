@@ -78,7 +78,7 @@ impl<'a> Transaction<'a> {
             .api
             .get::<TransactionData>(&format!("tx/{}", id))
             .await?;
-        // TODO(@littledivy): use self.get_data() for check for tx format >= 2
+        // TODO(@littledivy): use self.get_data() to check for tx format >= 2
         // https://github.com/ArweaveTeam/arweave-js/blob/d91ff7f89bf6b29d4e823d69ac1245e1517d5a56/src/common/transactions.ts#L74
         Ok(response)
     }
