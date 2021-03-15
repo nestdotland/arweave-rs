@@ -1,4 +1,5 @@
 use crate::api::{Api, Error};
+use crate::jwk::JwkPrivate;
 use serde::{Deserialize, Serialize};
 
 pub struct Wallet<'a> {
@@ -32,7 +33,7 @@ impl<'a> Wallet<'a> {
             .await
     }
 
-    pub async fn generate() -> Result<JWKPrivate, Error> {
-        crate::crypto::generate_jwk()
+    pub async fn generate() -> Result<JwkPrivate, rsa::errors::Error> {
+        crate::crypto::generate_jwk().await
     }
 }
