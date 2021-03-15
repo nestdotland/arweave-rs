@@ -1,6 +1,7 @@
 use serde::Deserialize;
 
 use crate::api::{Api, Error};
+use crate::b64::encode_url;
 
 #[derive(Deserialize, Debug)]
 pub struct Tag {
@@ -8,7 +9,7 @@ pub struct Tag {
     pub value: String,
 }
 
-#[derive(Deserialize, Debug)]
+#[derive(Deserialize, Debug, Default)]
 pub struct TransactionData {
     pub format: usize,
     pub id: String,
@@ -22,6 +23,14 @@ pub struct TransactionData {
     pub signature: String,
     pub data_size: String,
     pub data_root: String,
+}
+
+#[derive(Deserialize, Debug)]
+pub struct TransactionSignature {
+    pub id: String,
+    pub owner: String,
+    pub tags: Vec<Tag>,
+    pub signature: String,
 }
 
 #[derive(Deserialize, Debug)]
@@ -39,6 +48,7 @@ pub struct TransactionStatusResponse {
 
 pub struct Transaction<'a> {
     api: Api<'a>,
+    data: TransactionData,
 }
 
 /// A new Transaction instance.
@@ -46,8 +56,28 @@ pub struct Transaction<'a> {
 /// Has various methods for interacting Arweave transactions.
 impl<'a> Transaction<'a> {
     /// Creates a new transaction instance with the client API instance.
-    pub fn new(api: Api<'a>) -> Self {
-        Self { api: api }
+    pub fn new(api: Api<'a>, data: TransactionData) -> Self {
+        Self { api, data }
+    }
+
+    pub fn default(api: Api<'a>) -> Self {
+        Self {
+            api,
+            data: TransactionData {
+                format: 2,
+                reward: "0".to_string(),
+                quantity: "0".to_string(),
+                data_size: "0".to_string(),
+                ..Default::default()
+            },
+        }
+    }
+
+    pub fn add_tag(&mut self, name: &'a str, value: &'a str) {
+        self.data.tags.push(Tag {
+            name: encode_url(name.as_bytes()),
+            value: encode_url(value.as_bytes()),
+        });
     }
 
     /// Get price of a transaction payload based on its size along with its target address.
@@ -64,9 +94,6 @@ impl<'a> Transaction<'a> {
             None => format!("price/{}", byte_size),
         };
 
-        // XXX: Investigate whether it will convert Winston to Integer.
-        //      It really shouldn't because serde doesn't type cast like JSON.parse
-        //      But just in case, yk.
         self.api.get::<String>(&endpoint).await
     }
 
@@ -92,4 +119,18 @@ impl<'a> Transaction<'a> {
             .get::<TransactionStatusResponse>(&format!("tx/{}/status", id))
             .await
     }
+
+    /// Set transaction owner.
+    pub fn set_owner(&mut self, owner: &'a str) {
+        self.data.owner = owner.to_string();
+    }
+
+    pub fn set_signature(&mut self, signature: TransactionSignature) {
+        self.data.id = signature.id;
+        self.data.owner = signature.owner;
+        self.data.tags = signature.tags;
+        self.data.signature = signature.signature;
+    }
+
+    // pub async fn prepare(&mut self, data: Vec<u8>) {}
 }
