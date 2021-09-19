@@ -9,6 +9,7 @@ arweave-crypto = { path = "../crypto" }
 pretend = "0.3.0"
 pretend-reqwest = "0.3.0"
 serde = { version = "1", features = ["derive"] }
+async-trait = "0.1.51"
 
 [dev-dependencies]
 tokio-test = "0.4.2"

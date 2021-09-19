@@ -1,5 +1,6 @@
 use arweave_crypto::Driver;
 use arweave_crypto::PrivateKey;
+use async_trait::async_trait;
 use pretend::pretend;
 use pretend::resolver::UrlResolver;
 use pretend::JsonResult;
@@ -103,6 +104,37 @@ impl Client {
 
     pub async fn peer_info(&self) -> Result<Vec<String>> {
         let response = self.0.peer_info().await?;
+        match response {
+            JsonResult::Ok(n) => Ok(n),
+            JsonResult::Err(_) => todo!(),
+        }
+    }
+}
+
+#[async_trait]
+pub trait TxClient {
+    async fn get_price(&self, byte_size: &str) -> Result<String>;
+    async fn get(&self, id: &str) -> Result<TransactionData>;
+    async fn get_status(&self, id: &str) -> Result<TransactionStatusResponse>;
+}
+
+#[async_trait]
+impl TxClient for Client {
+    async fn get_price(&self, byte_size: &str) -> Result<String> {
+        let response = self.0.tx_get_price(byte_size).await?;
+        Ok(response)
+    }
+
+    async fn get(&self, id: &str) -> Result<TransactionData> {
+        let response = self.0.tx_get(id).await?;
+        match response {
+            JsonResult::Ok(n) => Ok(n),
+            JsonResult::Err(_) => todo!(),
+        }
+    }
+
+    async fn get_status(&self, id: &str) -> Result<TransactionStatusResponse> {
+        let response = self.0.tx_status(id).await?;
         match response {
             JsonResult::Ok(n) => Ok(n),
             JsonResult::Err(_) => todo!(),
