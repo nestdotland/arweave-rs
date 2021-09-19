@@ -1,11 +1,11 @@
 use arweave_crypto::Driver;
 use arweave_crypto::PrivateKey;
 use pretend::pretend;
+use pretend::resolver::UrlResolver;
 use pretend::JsonResult;
 use pretend::Pretend;
 use pretend::Result;
 pub use pretend::Url;
-use pretend::resolver::UrlResolver;
 use pretend_reqwest::Client as HttpClient;
 use serde::Deserialize;
 
