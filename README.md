@@ -10,9 +10,6 @@
 
 Arweave Rust SDK.
 
-> Currently, it supports most of HTTP API interaction. Wallet signing, sending
-> transactions is WIP.
-
 ### `installation`
 
 Add arweave_rs to your Cargo.toml

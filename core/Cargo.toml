@@ -1,0 +1,18 @@
+[package]
+name = "arweave-rs"
+version = "0.1.0"
+authors = ["littledivy <dj.srivastava23@gmail.com>"]
+edition = "2018"
+
+[dependencies]
+arweave-crypto = { path = "../crypto" }
+pretend = "0.3.0"
+pretend-reqwest = "0.3.0"
+serde = { version = "1", features = ["derive"] }
+async-trait = "0.1.51"
+
+[dev-dependencies]
+tokio-test = "0.4.2"
+
+[lib]
+path = "src/lib.rs"
