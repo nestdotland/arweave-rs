@@ -17,7 +17,6 @@ impl PrivateKey {
         unimplemented!()
     }
 
-
     pub fn sign(&self, data: &[u8]) -> Vec<u8> {
         // Perform RSA-PSS signing operation
         // > saltLength = 32
@@ -65,7 +64,6 @@ impl Driver {
             RsaPrivateKey::new_with_exp(&mut rng, 4096, &exponent).expect("Key generation failed");
         PrivateKey(p_key)
     }
-
 }
 
 #[cfg(test)]
