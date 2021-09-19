@@ -1,6 +1,7 @@
 [workspace]
 members = [
     "crypto/",
+    "core/",
 ]
 
 # Key generation is too slow on `debug`
