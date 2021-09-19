@@ -1,6 +1,12 @@
+use arweave_crypto::Driver;
+use arweave_crypto::PrivateKey;
 use pretend::pretend;
 use pretend::JsonResult;
+use pretend::Pretend;
 use pretend::Result;
+pub use pretend::Url;
+use pretend::resolver::UrlResolver;
+use pretend_reqwest::Client as HttpClient;
 use serde::Deserialize;
 
 #[derive(Deserialize, Debug)]
@@ -54,7 +60,7 @@ pub struct TransactionStatusResponse {
 #[pretend]
 trait ArweaveHttp {
     // Network
-    #[request(method = "GET", path = "/network")]
+    #[request(method = "GET", path = "/info")]
     async fn network_info(&self) -> Result<JsonResult<NetworkInfo, ()>>;
 
     #[request(method = "GET", path = "/peers")]
@@ -76,4 +82,55 @@ trait ArweaveHttp {
 
     #[request(method = "GET", path = "/wallet/{address}/last_tx")]
     async fn wallet_last_tx_id(&self, address: &str) -> Result<String>;
+}
+
+pub struct Client(Pretend<HttpClient, UrlResolver>);
+
+impl Client {
+    pub fn new(url: Url) -> Self {
+        let client = HttpClient::default();
+        let pretend = Pretend::for_client(client).with_url(url);
+        Self(pretend)
+    }
+
+    pub async fn network_info(&self) -> Result<NetworkInfo> {
+        let response = self.0.network_info().await?;
+        match response {
+            JsonResult::Ok(n) => Ok(n),
+            JsonResult::Err(_) => todo!(),
+        }
+    }
+
+    pub async fn peer_info(&self) -> Result<Vec<String>> {
+        let response = self.0.peer_info().await?;
+        match response {
+            JsonResult::Ok(n) => Ok(n),
+            JsonResult::Err(_) => todo!(),
+        }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::Client;
+    use super::Url;
+    use tokio_test::block_on;
+
+    #[test]
+    fn test_network_info() {
+        let url = Url::parse("https://arweave.net/").unwrap();
+        let client = Client::new(url);
+        let network_info = block_on(client.network_info()).unwrap();
+
+        assert_eq!(network_info.network, "arweave.N.1".to_string());
+    }
+
+    #[test]
+    fn test_peer_info() {
+        let url = Url::parse("https://arweave.net/").unwrap();
+        let client = Client::new(url);
+        let peer_info = block_on(client.peer_info()).unwrap();
+
+        assert!(peer_info.len() > 0);
+    }
 }

@@ -7,6 +7,11 @@ edition = "2018"
 [dependencies]
 arweave-crypto = { path = "../crypto" }
 pretend = "0.3.0"
+pretend-reqwest = "0.3.0"
 serde = { version = "1", features = ["derive"] }
+
+[dev-dependencies]
+tokio-test = "0.4.2"
+
 [lib]
 path = "src/lib.rs"
