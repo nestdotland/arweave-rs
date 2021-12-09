@@ -16,14 +16,14 @@ Add arweave_rs to your Cargo.toml
 
 ```toml
 [dependencies]
-arweave_rs = { git = "https://github.com/nestdotland/arweave-rs" }
+arweave-rs = { git = "https://github.com/nestdotland/arweave-rs" }
 ```
 
 ### `example`
 
 ```rust
-use arweave_rs::api::{Api, Protocol};
-use arweave_rs::tx::Transaction;
+use arweave-rs::api::{Api, Protocol};
+use arweave-rs::tx::Transaction;
 
 // Interact with the HTTP API
 let api = Api::new("arweave.net", Protocol::HTTPS, 443);
